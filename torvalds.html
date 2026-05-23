@@ -1,0 +1,57 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            :root {
+                --bg: #0d1117;
+                --text: #c9d1d9;
+                --accent: #238636;
+            }
+            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: transparent; margin: 0; }
+            .card {
+                background: var(--bg); color: var(--text); border-radius: 15px;
+                padding: 20px; width: 450px; border: 2px solid var(--accent);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+            .header { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+            .avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent); }
+            .vibe { font-style: italic; margin: 10px 0; border-left: 3px solid var(--accent); padding-left: 10px; }
+            .badge { background: var(--accent); color: var(--bg); padding: 3px 10px; border-radius: 20px; font-size: 0.8em; margin-right: 5px; }
+            .stats { display: flex; gap: 20px; margin: 15px 0; font-weight: bold; }
+            .repos { font-size: 0.9em; }
+            .repo-item { margin: 5px 0; }
+        </style>
+    </head>
+    <body>
+        <div class="card">
+            <div class="header">
+                <img src="https://avatars.githubusercontent.com/u/1024025?v=4" class="avatar">
+                <div>
+                    <h2 style="margin:0">Linus Torvalds</h2>
+                    <p style="margin:0; opacity:0.8">@torvalds</p>
+                </div>
+            </div>
+            <div class="vibe">The Stoic Architect of Modern Computing.</div>
+            <div class="skills">
+                <span class="badge">C</span><span class="badge">System Design</span><span class="badge">Kernel Development</span>
+            </div>
+            <div class="stats">
+                <span>Repos: 11</span>
+                <span>Followers: 304179</span>
+            </div>
+            <div class="repos">
+                <strong>Top Repos:</strong>
+                
+                <div class="repo-item">? 234149 | <strong>linux</strong> (C)</div>
+                
+                <div class="repo-item">? 4372 | <strong>AudioNoise</strong> (C)</div>
+                
+                <div class="repo-item">? 2030 | <strong>uemacs</strong> (C)</div>
+                
+            </div>
+            <p style="font-size: 0.8em; margin-top: 15px; opacity: 0.7">Fact: Created Git because existing options were too slow.</p>
+        </div>
+    </body>
+    </html>
+    

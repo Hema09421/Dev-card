@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+mcp[all]
+python-dotenv
+google-generativeai
+httpx
+jinja2
+google-adk

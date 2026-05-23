@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Dev Card Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --container-bg: #161b22;
+            --text-primary: #f0f6fc;
+            --text-secondary: #8b949e;
+            --accent-color: #238636;
+            --accent-hover: #2ea043;
+            --error-color: #f85149;
+            --border-color: #30363d;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #58a6ff, #bc8cff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subheading {
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            font-size: 1.1rem;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        input {
+            flex: 1;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            padding: 12px 16px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+        }
+
+        button.generate-btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button.generate-btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+
+        button.generate-btn:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Loading Skeleton */
+        .skeleton {
+            display: none;
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(90deg, #161b22 25%, #21262d 50%, #161b22 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 12px;
+            margin-top: 24px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* Result Area */
+        #result-container {
+            display: none;
+            margin-top: 24px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-frame {
+            width: 100%;
+            height: 450px;
+            border: none;
+            border-radius: 12px;
+            background: white;
+            margin-bottom: 16px;
+        }
+
+        .action-group {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .share-btn {
+            background-color: #21262d;
+            color: #c9d1d9;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+
+        .share-btn:hover {
+            background-color: #30363d;
+        }
+
+        .error-message {
+            display: none;
+            color: var(--error-color);
+            margin-top: 16px;
+            font-size: 0.9rem;
+            padding: 12px;
+            background: rgba(248, 81, 73, 0.1);
+            border-radius: 6px;
+            border: 1px solid rgba(248, 81, 73, 0.4);
+        }
+
+        .status-text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GitHub Dev Card Generator</h1>
+        <p class="subheading">Enter any public GitHub username</p>
+
+        <div class="input-group">
+            <input type="text" id="username" placeholder="e.g. torvalds" spellcheck="false">
+            <button id="generate-btn" class="generate-btn" onclick="generate()">Generate Card</button>
+        </div>
+
+        <div id="status" class="status-text" style="display:none">Orchestrating tools...</div>
+        
+        <div id="skeleton" class="skeleton"></div>
+
+        <div id="result-container">
+            <iframe id="card-iframe" class="card-frame"></iframe>
+            <div class="action-group">
+                <button class="share-btn" onclick="copyUrl()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"></path><path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"></path></svg>
+                    Copy Share Link
+                </button>
+            </div>
+        </div>
+
+        <div id="error" class="error-message"></div>
+    </div>
+
+    <script>
+        let currentCardUrl = '';
+        const BACKEND_URL = '${BACKEND_URL}';
+
+        async function generate() {
+            const usernameInput = document.getElementById('username');
+            const username = usernameInput.value.trim();
+            if (!username) return;
+
+            const btn = document.getElementById('generate-btn');
+            const skeleton = document.getElementById('skeleton');
+            const resultContainer = document.getElementById('result-container');
+            const errorDiv = document.getElementById('error');
+            const statusText = document.getElementById('status');
+            const iframe = document.getElementById('card-iframe');
+
+            btn.disabled = true;
+            errorDiv.style.display = 'none';
+            resultContainer.style.display = 'none';
+            skeleton.style.display = 'block';
+            statusText.style.display = 'block';
+            statusText.innerText = '?? Agent is orchestrating tools...';
+
+            try {
+                const response = await fetch(`${BACKEND_URL}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username })
+                });
+
+                if (!response.ok) {
+                    const data = await response.json();
+                    throw new Error(data.detail || 'User not found or generation failed');
+                }
+
+                const data = await response.json();
+                currentCardUrl = `${BACKEND_URL}${data.card_url}`;
+                
+                iframe.src = currentCardUrl;
+                
+                skeleton.style.display = 'none';
+                statusText.style.display = 'none';
+                resultContainer.style.display = 'block';
+
+            } catch (err) {
+                skeleton.style.display = 'none';
+                statusText.style.display = 'none';
+                errorDiv.innerText = `Error: ${err.message}`;
+                errorDiv.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        function copyUrl() {
+            if (!currentCardUrl) return;
+            navigator.clipboard.writeText(currentCardUrl);
+            const btn = document.querySelector('.share-btn');
+            const originalText = btn.innerHTML;
+            btn.innerText = '? Copied!';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+            }, 2000);
+        }
+
+        document.getElementById('username').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generate();
+        });
+    </script>
+</body>
+</html>
